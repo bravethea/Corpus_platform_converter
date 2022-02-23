@@ -2,4 +2,3 @@ tmp.py
 .idea
 venv/
 output_files/test.json
-*.pyc
