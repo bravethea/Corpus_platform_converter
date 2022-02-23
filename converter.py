@@ -8,8 +8,16 @@ import conllu_parse
 class Converter:
 
     def __init__(self, unknown_data_path, output_file = None):
-        self.unknown_data_path = unknown_data_path
-        self.output_file = output_file
+        if os.path.isfile(unknown_data_path):
+            self.unknown_data_path = unknown_data_path
+        else:
+            raise ImportError("The specified file does not exist.")
+
+        if output_file == None:
+            self.output_file = open("json_out.json", 'w')
+        else:
+            self.output_file = open(output_file, 'w')
+
 
     def determine_format(self):
         if os.path.isfile(self.unknown_data_path):
@@ -25,21 +33,29 @@ class Converter:
             else:
                 raise ValueError("Unrecognized format. \n Note: The converter currently supports the following formats: .conllu, .xml (TEI), and .vert.")
 
+
     def parse_input(self):
         input_format = self.determine_format()
         if input_format == "conllu":
             conllu_parsed = conllu_parse.parser(self.unknown_data_path)
+            return conllu_parsed
+
 
     def save_output(self):
-        parsed_dict = self.parse_input(self.unknown_data_path)
-        with open(self.output_file, 'w') as out_file:
-            json.dump(out_file, parsed_dict)
+        parsed_dict = self.parse_input()
+        saved_output = json.dump(parsed_dict, self.output_file)
+        print("saved")
+        return saved_output
 
 
 
 
 if __name__ == "__main__":
 
-    conllu_path = "/Users/teodoravukovic/Google Drive (not syncing)/PycharmProjects/VIAN-file-conversion/CONLLU/samples/conllu_test.conllu"  # this line should be within the main block
+    parser = argparse.ArgumentParser(description="Convert input file (arg1) into output file (arg2)")
+    parser.add_argument("-in", "--input_file", type=str, required=True, help="Input file path")
+    parser.add_argument("-out", "--output_file", type=str, help="Output file path")
+    args = parser.parse_args()
 
-    Converter(conllu_path, output_file="json_text.json")
+    converter = Converter(args.input_file, args.output_file)
+    Converter.save_output(converter)
