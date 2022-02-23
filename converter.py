@@ -14,7 +14,7 @@ class Converter:
             raise ImportError("The specified file does not exist.")
 
         if output_file == None:
-            self.output_file = open("json_out.json", 'w')
+            self.output_file = open("output_files/json_out.json", 'w')
         else:
             self.output_file = open(output_file, 'w')
 
