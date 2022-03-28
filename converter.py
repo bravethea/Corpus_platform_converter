@@ -2,21 +2,22 @@ import argparse
 import json
 import os
 
-import conllu_parse
+import conllu_parse, vert_write
 # from . import conllu_parse # TV: I am not sure how this is supposed to work, I am getting an ImportError
 
 class Converter:
 
-    def __init__(self, unknown_data_path, output_file = None):
+    def __init__(self, unknown_data_path, output_path = None):
+        self.output_path = output_path
         if os.path.isfile(unknown_data_path):
             self.unknown_data_path = unknown_data_path
         else:
             raise ImportError("The specified file does not exist.")
 
-        if output_file == None:
+        if self.output_path == None:
             self.output_file = open("output_files/json_out.json", 'w')
         else:
-            self.output_file = open(output_file, 'w')
+            self.output_file = open(self.output_path, 'w')
 
 
     def determine_format(self):
@@ -43,9 +44,21 @@ class Converter:
 
     def save_output(self):
         parsed_dict = self.parse_input()
-        saved_output = json.dump(parsed_dict, self.output_file)
-        print("saved")
-        return saved_output
+        if self.output_path.endswith("json"):
+            saved_output = json.dump(parsed_dict, self.output_file, sort_keys=False)
+            return saved_output
+
+        elif self.output_path.endswith("vert"):
+            saved_output = vert_write.writer(parsed_dict)
+            self.output_file.write(saved_output)
+
+        elif self.output_path.endswith("xml"):
+            pass
+
+        else:
+            raise
+
+print("saved")
 
 
 

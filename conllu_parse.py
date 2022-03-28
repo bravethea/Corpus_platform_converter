@@ -34,7 +34,7 @@ def parser(conllu_path):
             sent_list = [line for line in sent.split('\n') if line]
             for line in sent_list:
                 if "sent_id" in line:
-                    sent_id = sent_list[0].split(' = ')[1] #sent id will not always be the first attribute, there might not spaces around = ; identify the lines introduced with #
+                    sent_id = sent_list[0].split('=')[1].strip(' ') #sent id will not always be the first attribute, there might not spaces around = ; identify the lines introduced with #
                 #check how metadata is encoded, check if there is a separate metadata file
                 #the last column of the token line is additional optional metadata, which can have key-value pairs
 
