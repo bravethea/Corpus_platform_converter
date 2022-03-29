@@ -1,5 +1,7 @@
-tmp.py
-__pycache__
-.idea
+__pycache__/
 venv/
 output_files/test.json
+tmp.py
+*.pyc
+.idea
+
