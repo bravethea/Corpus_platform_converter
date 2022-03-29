@@ -34,30 +34,44 @@ def parser(conllu_path):
             sent_list = [line for line in sent.split('\n') if line]
             for line in sent_list:
                 if "sent_id" in line:
-                    sent_id = sent_list[0].split('=')[1].strip(' ') #sent id will not always be the first attribute, there might not spaces around = ; identify the lines introduced with #
+                    sent_id = sent_list[0].split('=')[1].strip(' ')
+                    #sent id will not always be the first attribute, there might not spaces around = ; identify the lines introduced with #
                 #check how metadata is encoded, check if there is a separate metadata file
                 #the last column of the token line is additional optional metadata, which can have key-value pairs
 
-
-            conllu_parsed["sentences"][sent_id] = []
+            conllu_parsed["sentences"][sent_id] = {"sent_metadata":{}, "sent_text":[]}
 
             for line in sent_list:
-                if re.match(r'\d.*', line): # if a line begins with # then it is a comment, every other line must be a row (token id can also be 1.a and other stuff)
+                if line.startswith('#'):
+                    key = sent_list[0].split('=')[0].strip('#').strip(' ')
+                    value = sent_list[0].split('=')[1].strip(' ')
+                    conllu_parsed["sentences"][sent_id]["sent_metadata"][key] = value
+
+                elif re.match(r'\d.*', line): # if a line begins with # then it is a comment, every other line must be a row (token id can also be 1.a and other stuff)
                     line_list = line.split('\t')
-                    conllu_parsed["sentences"][sent_id].append(line_list)
+                    conllu_parsed["sentences"][sent_id]["sent_text"].append(line_list)
 
-                        # token_id = line_list[0]
-                        # word = line_list[1]
-                        # lemma = line_list[2]
-                        # upos = line_list[3]
-                        # xpos = line_list[4]
-                        # feats = line_list[4]
-                        # head = line_list[5]
-                        # deprel = line_list[6]
-                        # deps = line_list[7]
 
-        print(conllu_parsed)
+
+        # print(conllu_parsed)
         return conllu_parsed
+
+
+def writer(input_dict, input_filename=None):
+
+    conllu_file_list = []
+
+    for sent_id,sent_data in input_dict["sentences"].items():
+
+        for item in sent_data:
+            if "metadata" in item:
+                sent_meta = sent_data[item]
+            elif "text" in item:
+                sent_text = sent_data[item]
+
+        for k,v in sent_meta.items():
+            conllu_file_list.append("# {} = {}\n".format(k,v))
+
 
 parser(conllu_path)
 

@@ -1,6 +1,6 @@
 <corpus>
-<text id="lll">
-<s>
+<text id="in">
+<s sent_id=isst_tanl-19>
 Corriere	Corriere	PROPN
 Sport	Sport	PROPN
 da	da	ADP
@@ -10,7 +10,7 @@ a	a	ADP
 pagina	pagina	NOUN
 26	26	NUM
 </s>
-<s>
+<s sent_id=isst_tanl-58>
 I	il	DET
 tre	tre	NUM
 avevano	avere	AUX
@@ -26,7 +26,7 @@ la	il	DET
 discesa	discesa	NOUN
 .	.	PUNCT
 </s>
-<s>
+<s sent_id=isst_tanl-124>
 Tutti	tutto	DET
 gli	il	DET
 esseri	essere	NOUN

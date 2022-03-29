@@ -27,20 +27,34 @@ ví	vi	vi-p	Pp2-pn
 """
 input_path = "output_files/json_out.json"
 
-def writer(input_dict):
+def writer(input_dict, input_filename=None):
 
     vert_file_list = []
 
     vert_file_list.append("<corpus>\n")
-    vert_file_list.append('<text id="lll">\n')
+    vert_file_list.append('<text id="{}">\n'.format(input_filename))
 
-    for sent_id,sent_text in input_dict["sentences"].items():
-        vert_file_list.append("<s>\n")
+    for sent_id,sent_data in input_dict["sentences"].items():
+
+        for item in sent_data:
+            if "metadata" in item:
+                sent_meta = sent_data[item]
+            elif "text" in item:
+                sent_text = sent_data[item]
+
+        vert_file_list.append("<s")
+
+        for k,v in sent_meta.items():
+            kv_pair = " {}={}".format(k,v)
+            vert_file_list.append(kv_pair)
+
+        vert_file_list.append(">\n")
+
 
         for token in sent_text:
             token_str = "\t".join(token[1:4])
-
             vert_file_list.append(token_str+"\n")
+
         vert_file_list.append("</s>\n")
 
     vert_file_list.append("</corpus>\n")

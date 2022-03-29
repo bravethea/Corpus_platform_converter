@@ -2,7 +2,7 @@ import argparse
 import json
 import os
 
-import conllu_parse, vert_write
+import conllu_parse, vert_parse
 # from . import conllu_parse # TV: I am not sure how this is supposed to work, I am getting an ImportError
 
 class Converter:
@@ -11,6 +11,8 @@ class Converter:
         self.output_path = output_path
         if os.path.isfile(unknown_data_path):
             self.unknown_data_path = unknown_data_path
+            self.input_filename = os.path.basename(unknown_data_path)
+
         else:
             raise ImportError("The specified file does not exist.")
 
@@ -49,14 +51,16 @@ class Converter:
             return saved_output
 
         elif self.output_path.endswith("vert"):
-            saved_output = vert_write.writer(parsed_dict)
+            text_id = self.input_filename.split('.')[0]
+            saved_output = vert_parse.writer(parsed_dict, text_id)
             self.output_file.write(saved_output)
 
         elif self.output_path.endswith("xml"):
             pass
 
         else:
-            raise
+            raise ValueError("Unrecognized format. \n Note: The converter currently supports the following formats: .conllu, .xml (TEI), and .vert.")
+
 
 print("saved")
 
