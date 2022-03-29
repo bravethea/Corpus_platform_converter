@@ -34,7 +34,7 @@ class Converter:
                 input_format = "xml"
                 return input_format
             else:
-                raise ValueError("Unrecognized format. \n Note: The converter currently supports the following formats: .conllu, .xml (TEI), and .vert.")
+                raise ValueError("Unrecognized input format. \n Note: The converter currently supports the following formats: .conllu, .xml (TEI), and .vert.")
 
 
     def parse_input(self):
@@ -55,11 +55,15 @@ class Converter:
             saved_output = vert_parse.writer(parsed_dict, text_id)
             self.output_file.write(saved_output)
 
+        elif self.output_path.endswith("conllu"):
+            saved_output = conllu_parse.writer(parsed_dict)
+            self.output_file.write(saved_output)
+
         elif self.output_path.endswith("xml"):
             pass
 
         else:
-            raise ValueError("Unrecognized format. \n Note: The converter currently supports the following formats: .conllu, .xml (TEI), and .vert.")
+            raise ValueError("Unrecognized output format. \n Note: The converter currently supports the following formats: .conllu, .xml (TEI), and .vert.")
 
 
 print("saved")

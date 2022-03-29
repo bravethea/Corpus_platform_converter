@@ -25,7 +25,17 @@ ví	vi	vi-p	Pp2-pn
 </text>
 
 """
-input_path = "output_files/json_out.json"
+
+def parser(vert_path):
+
+    with codecs.open(vert_path, 'r', 'utf8') as input_file:
+        input_data = input_file.read()
+        sentences = [sent for sent in input_data.split('\n\n') if sent]
+
+        conllu_parsed = {
+            "metadata_file": {},
+            "sentences": {}
+        }
 
 def writer(input_dict, input_filename=None):
 
@@ -52,7 +62,8 @@ def writer(input_dict, input_filename=None):
 
 
         for token in sent_text:
-            token_str = "\t".join(token[1:4])
+            token_list = [v for k,v in token.items()]
+            token_str = "\t".join(token_list[1:4])
             vert_file_list.append(token_str+"\n")
 
         vert_file_list.append("</s>\n")
@@ -61,11 +72,4 @@ def writer(input_dict, input_filename=None):
     vert_file_list.append('</text>\n')
 
     return "".join(vert_file_list)
-
-
-
-        # print(json_object)
-
-# if __name__ == "__main__":
-#     writer(input_path)
 

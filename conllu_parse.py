@@ -35,9 +35,6 @@ def parser(conllu_path):
             for line in sent_list:
                 if "sent_id" in line:
                     sent_id = sent_list[0].split('=')[1].strip(' ')
-                    #sent id will not always be the first attribute, there might not spaces around = ; identify the lines introduced with #
-                #check how metadata is encoded, check if there is a separate metadata file
-                #the last column of the token line is additional optional metadata, which can have key-value pairs
 
             conllu_parsed["sentences"][sent_id] = {"sent_metadata":{}, "sent_text":[]}
 
@@ -47,9 +44,23 @@ def parser(conllu_path):
                     value = sent_list[0].split('=')[1].strip(' ')
                     conllu_parsed["sentences"][sent_id]["sent_metadata"][key] = value
 
-                elif re.match(r'\d.*', line): # if a line begins with # then it is a comment, every other line must be a row (token id can also be 1.a and other stuff)
+                elif re.match(r'\d.*', line): # (token id can also be 1.a and other stuff)
                     line_list = line.split('\t')
-                    conllu_parsed["sentences"][sent_id]["sent_text"].append(line_list)
+
+                    id = line_list[0]
+                    form = line_list[1]
+                    lemma = line_list[2]
+                    upos = line_list[3]
+                    xpos = line_list[4]
+                    feats = line_list[5]
+                    head = line_list[6]
+                    deprel = line_list[7]
+                    deps = line_list[8]
+                    misc = line_list[9]
+
+                    line_dict = {"id": id, "form": form, "lemma": lemma, "upos": upos, "xpos": xpos, "feats": feats, "head": head, "deprel": deprel, "deps": deps, "misc": misc}
+
+                    conllu_parsed["sentences"][sent_id]["sent_text"].append(line_dict)
 
 
 
@@ -71,6 +82,11 @@ def writer(input_dict, input_filename=None):
 
         for k,v in sent_meta.items():
             conllu_file_list.append("# {} = {}\n".format(k,v))
+
+        for item in sent_text:
+            pass
+
+
 
 
 parser(conllu_path)
