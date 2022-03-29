@@ -14,7 +14,7 @@ The initialy supported input formats are TEI XML, CONLL, and the .vert CQP forma
 
 ## Output formats
 
-The intermediary output format is generated as JSON. The final output can be euther that JSON or any of the input formats
+The intermediary output format is generated as JSON. The final output can be either JSON or any of the input formats (conll, vert, xml)
 
 ## Corntributors
 
