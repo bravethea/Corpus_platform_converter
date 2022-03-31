@@ -1,6 +1,7 @@
 import codecs
 import re
 import json
+from lxml import etree
 
 """
 <text id="TOR_C_0001">
@@ -30,12 +31,54 @@ def parser(vert_path):
 
     with codecs.open(vert_path, 'r', 'utf8') as input_file:
         input_data = input_file.read()
-        sentences = [sent for sent in input_data.split('\n\n') if sent]
 
-        conllu_parsed = {
+        root = etree.fromstring(input_data)
+        # sentences = [sent for sent in input_data.split('>\n<s') if sent]
+
+        vert_parsed = {
             "metadata_file": {},
             "sentences": {}
         }
+
+        for element in root:
+
+            if element.tag == "text": # possible to find vert files with more texts, account for that
+                text = element
+                for k,v in element.attrib.items():
+                    vert_parsed["metadata_file"][k] = v
+
+                for subelement in text:
+
+                    if subelement.tag == "s":
+                        sentence = subelement
+
+                        sent_meta = sentence.attrib
+                        for k in sent_meta:
+                            if "id" in k:
+                                sent_id = sent_meta[k]
+
+                        vert_parsed["sentences"][sent_id] = {"sent_metadata": sent_meta, "sent_text": []}
+
+                        sent_text = sentence.text.strip()
+                        token_list = sent_text.split('\n')
+                        for token in token_list:
+                            form = token.split('\t')[0]
+                            lemma = token.split('\t')[1]
+                            pos = token.split('\t')[2]
+
+                            token_dict = {"form": form, "lemma": lemma, "xpos": pos}
+
+                            vert_parsed["sentences"][sent_id]["sent_text"].append(token_dict)
+                    else:
+                        print(subelement)
+                        # for now processing only 's' elements. include 'p', 'title' and others
+            else:
+                print(element)
+                # for now processing only 'text' elements
+
+        return vert_parsed
+
+
 
 def writer(input_dict, input_filename=None):
 
@@ -55,7 +98,7 @@ def writer(input_dict, input_filename=None):
         vert_file_list.append("<s")
 
         for k,v in sent_meta.items():
-            kv_pair = " {}={}".format(k,v)
+            kv_pair = ' {}="{}"'.format(k,v)
             vert_file_list.append(kv_pair)
 
         vert_file_list.append(">\n")
@@ -68,8 +111,8 @@ def writer(input_dict, input_filename=None):
 
         vert_file_list.append("</s>\n")
 
-    vert_file_list.append("</corpus>\n")
     vert_file_list.append('</text>\n')
+    vert_file_list.append("</corpus>\n")
 
     return "".join(vert_file_list)
 
